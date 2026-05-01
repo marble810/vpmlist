@@ -16,5 +16,8 @@
     "githubRepos":[
         "marble810/MarbleAvatarToolbox"
     ],
-    "packages":[]
+    "packages":[],
+    "excludedPackages":[
+        "marble810.marbleavatartools"
+    ]
 }

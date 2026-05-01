@@ -59,6 +59,39 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Remove excluded packages from listing
+        shell: python
+        run: |
+          import json
+          from pathlib import Path
+
+          source_path = Path("source.json")
+          index_path = Path("${{ env.listPublishDirectory }}") / "index.json"
+
+          source = json.loads(source_path.read_text(encoding="utf-8"))
+          excluded = set(source.get("excludedPackages", []))
+
+          if not excluded:
+              print("No excludedPackages configured.")
+              raise SystemExit(0)
+
+          listing = json.loads(index_path.read_text(encoding="utf-8"))
+          packages = listing.get("packages", {})
+          removed = [package_id for package_id in list(packages.keys()) if package_id in excluded]
+
+          for package_id in removed:
+              packages.pop(package_id, None)
+
+          index_path.write_text(
+              json.dumps(listing, ensure_ascii=False, indent=2) + "\n",
+              encoding="utf-8"
+          )
+
+          if removed:
+              print(f"Removed excluded packages: {', '.join(removed)}")
+          else:
+              print("No excluded packages were present in the generated listing.")
+
       - name: Summarize trigger
         shell: bash
         run: |
