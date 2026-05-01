@@ -2,9 +2,14 @@ name: Build Repo Listing
 
 on: 
   workflow_dispatch:
+  repository_dispatch:
+    types:
+      - upstream-package-released
   push:
-    branches: main
-    paths: source.json
+    branches:
+      - main
+    paths:
+      - source.json
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -25,6 +30,9 @@ jobs:
   
   build-listing:
     name: build-listing
+    if: >-
+      github.event_name != 'repository_dispatch' ||
+      github.event.action == 'upstream-package-released'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -50,6 +58,20 @@ jobs:
         run: ${{env.pathToCi}}/build.cmd BuildMultiPackageListing --root ${{env.pathToCi}} --list-publish-directory $GITHUB_WORKSPACE/${{env.listPublishDirectory}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summarize trigger
+        shell: bash
+        run: |
+          {
+            echo "## Listing rebuild"
+            echo
+            echo "- Event: ${{ github.event_name }}"
+            if [[ "${{ github.event_name }}" == "repository_dispatch" ]]; then
+              echo "- Source repository: ${{ github.event.client_payload.source_repository }}"
+              echo "- Version: ${{ github.event.client_payload.version }}"
+              echo "- Release: ${{ github.event.client_payload.release_url }}"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
  
       - name: Setup Pages
         uses: actions/configure-pages@v5

@@ -4,6 +4,15 @@ Starter for making your own Package Listings, including automation for building 
 
 Once you're all set up, you'll be able to update the [`source.json`](source.json) file, and generate a listing which works in the VPM for delivering updates for all the listed packages.
 
+## 当前仓库用法
+
+- 这个仓库当前通过 [`source.json`](source.json) 的 `githubRepos` 跟踪 `marble810/MarbleAvatarToolbox`。
+- [`build-listing.yml`](.github/workflows/build-listing.yml) 会在三种情况下重建 listing：
+  - 手动触发 `workflow_dispatch`
+  - `source.json` 推送到 `main`
+  - 上游包仓库发送 `repository_dispatch`
+- listing 重建时会重新扫描目标仓库已有的 GitHub Releases；如果发现新 release，会自动把对应版本写入生成的 `index.json`。
+
 ## ▶ Getting Started
 
 * Press [![Use This Template](https://user-images.githubusercontent.com/737888/185467681-e5fdb099-d99f-454b-8d9e-0760e5a6e588.png)](https://github.com/vrchat-community/template-package-listing/generate)
