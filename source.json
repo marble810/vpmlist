@@ -1,28 +1,23 @@
 {
-    "name":"Example Listing",
+    "name":"Marble Avatar Tools",
     "id":"com.vrchat.example-listing",
-    "url":"https://vrchat-community.github.io/template-package-listing/index.json",
+    "url":"https://marble810.github.io/MarbleAvatarTools/index.json",
     "author":{
-        "email":"developer@vrchat.com",
-        "name":"VRChat",
-        "url":"https://hello.vrchat.com"
+        "email":"kzkt@foxmail.com",
+        "name":"marble810",
+        "url":"https://github.com/marble810"
     },
-    "description":"Example listing of VRChat packages",
+    "description":"Tools for making VRChat avatars",
     "infoLink":{
-        "url":"http://github.com/vrchat-community/template-package-listing",
+        "url":"https://github.com/marble810/MarbleAvatarTools",
         "text":"View on GitHub"
     },
     "bannerUrl":"banner.png",
     "githubRepos":[
-        "vrchat-community/clientsim"
+        "marble810/MarbleAvatarTools"
     ],
     "packages":[
         {
-            "name":"com.vrchat.udonsharp",
-            "releases":[
-                "https://github.com/vrchat-community/UdonSharp/releases/download/1.1.7/com.vrchat.UdonSharp.zip",
-                "https://github.com/vrchat-community/UdonSharp/releases/download/1.1.6/com.vrchat.UdonSharp-1.1.6.zip"
-            ]
         }
     ]
 }
