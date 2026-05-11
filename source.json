@@ -1,5 +1,5 @@
 {
-    "name":"Marble Avatar Tools",
+    "name":"Marble Avatar Toolbox",
     "id":"com.marble810.vpmlist",
     "url":"https://marble810.github.io/vpmlist/index.json",
     "author":{
@@ -7,7 +7,7 @@
         "name":"marble810",
         "url":"https://github.com/marble810"
     },
-    "description":"Tools for making VRChat avatars",
+    "description":"Marble Avatar Toolbox — tools for making VRChat avatars",
     "infoLink":{
         "url":"https://github.com/marble810/vpmlist",
         "text":"View on GitHub"
@@ -16,8 +16,5 @@
     "githubRepos":[
         "marble810/MarbleAvatarToolbox"
     ],
-    "packages":[],
-    "excludedPackages":[
-        "marble810.marbleavatartools"
-    ]
+    "packages":[]
 }
