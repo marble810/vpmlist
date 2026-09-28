@@ -1,2 +1,14 @@
 ﻿.idea
 .vscode
+
+# dependencies / build output
+node_modules
+dist
+listing-out
+.svelte-kit
+
+# locally downloaded listing data (generated in CI, see README)
+public/index.json
+
+# design sources (large, not published)
+banner.psd

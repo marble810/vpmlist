@@ -1,6 +1,6 @@
 name: Build Repo Listing
 
-on: 
+on:
   workflow_dispatch:
   repository_dispatch:
     types:
@@ -8,27 +8,26 @@ on:
   push:
     branches:
       - main
-    paths:
-      - source.json
-      - Website/**
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
-  
+
 # Allow one concurrent deployment
 concurrency:
   group: "pages"
   cancel-in-progress: true
-  
+
 env:
-  listPublishDirectory: Website
+  # the built landing page, uploaded to GitHub Pages
+  listPublishDirectory: dist
+  # scratch directory where the listing action writes index.json (+ its own template pages)
+  listingOutputDirectory: listing-out
   pathToCi: ci
 
 jobs:
-  
   build-listing:
     name: build-listing
     if: >-
@@ -39,14 +38,19 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      
       - uses: actions/checkout@v4 # check out this repo
       - uses: actions/checkout@v4 # check out automation repo
         with:
           repository: vrchat-community/package-list-action
           path: ${{env.pathToCi}}
           clean: false # otherwise the local repo will no longer be checked out
-          
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
       - name: Restore Cache
         uses: actions/cache@v4
         with:
@@ -54,67 +58,39 @@ jobs:
             ${{env.pathToCi}}/.nuke/temp
             ~/.nuget/packages
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj') }}
-          
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck and build the site
+        run: |
+          npm run check
+          npm run build
+
+      # Generates index.json from source.json + GitHub releases.
+      # It also renders the template pages in Website/ — we only keep index.json.
       - name: Build Package Version Listing
-        run: ${{env.pathToCi}}/build.cmd BuildMultiPackageListing --root ${{env.pathToCi}} --list-publish-directory $GITHUB_WORKSPACE/${{env.listPublishDirectory}}
+        run: ${{env.pathToCi}}/build.cmd BuildMultiPackageListing --root ${{env.pathToCi}} --list-publish-directory $GITHUB_WORKSPACE/${{env.listingOutputDirectory}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Merge listing data into the built site
+        run: cp ${{env.listingOutputDirectory}}/index.json ${{env.listPublishDirectory}}/index.json
+
       - name: Remove excluded packages from listing
-        shell: python
-        run: |
-          import json
-          from pathlib import Path
+        run: node scripts/filter-excluded-packages.mjs source.json ${{env.listPublishDirectory}}/index.json
 
-          source_path = Path("source.json")
-          index_path = Path("${{ env.listPublishDirectory }}") / "index.json"
+      - name: Summarize listing
+        run: node scripts/summarize-listing.mjs ${{env.listPublishDirectory}}/index.json >> "$GITHUB_STEP_SUMMARY"
 
-          source = json.loads(source_path.read_text(encoding="utf-8"))
-          excluded = set(source.get("excludedPackages", []))
-
-          if not excluded:
-              print("No excludedPackages configured.")
-              raise SystemExit(0)
-
-          listing = json.loads(index_path.read_text(encoding="utf-8"))
-          packages = listing.get("packages", {})
-          removed = [package_id for package_id in list(packages.keys()) if package_id in excluded]
-
-          for package_id in removed:
-              packages.pop(package_id, None)
-
-          index_path.write_text(
-              json.dumps(listing, ensure_ascii=False, indent=2) + "\n",
-              encoding="utf-8"
-          )
-
-          if removed:
-              print(f"Removed excluded packages: {', '.join(removed)}")
-          else:
-              print("No excluded packages were present in the generated listing.")
-
-      - name: Summarize trigger
-        shell: bash
-        run: |
-          {
-            echo "## Listing rebuild"
-            echo
-            echo "- Event: ${{ github.event_name }}"
-            if [[ "${{ github.event_name }}" == "repository_dispatch" ]]; then
-              echo "- Source repository: ${{ github.event.client_payload.source_repository }}"
-              echo "- Version: ${{ github.event.client_payload.version }}"
-              echo "- Release: ${{ github.event.client_payload.release_url }}"
-            fi
-          } >> "$GITHUB_STEP_SUMMARY"
- 
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ${{env.listPublishDirectory}}
-          
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
