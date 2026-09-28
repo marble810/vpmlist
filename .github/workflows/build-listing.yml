@@ -69,6 +69,10 @@ jobs:
 
       # Generates index.json from source.json + GitHub releases.
       # It also renders the template pages in Website/ — we only keep index.json.
+      # NOTE: the action does not create its output directory itself.
+      - name: Prepare listing output directory
+        run: mkdir -p ${{env.listingOutputDirectory}}
+
       - name: Build Package Version Listing
         run: ${{env.pathToCi}}/build.cmd BuildMultiPackageListing --root ${{env.pathToCi}} --list-publish-directory $GITHUB_WORKSPACE/${{env.listingOutputDirectory}}
         env:
