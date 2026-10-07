@@ -85,6 +85,11 @@ jobs:
         run: ${{env.pathToCi}}/build.cmd BuildMultiPackageListing --root ${{env.pathToCi}} --list-publish-directory $GITHUB_WORKSPACE/${{env.listingOutputDirectory}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # The action's build.sh sniffs the SDK and normally runs its net8.0 target, but
+          # it can still launch the net6.0 one. .NET 6 is EOL and no longer installed on
+          # the runner images, so that launch dies with "You must install or update .NET"
+          # (exit 150). Rolling forward lets either target run on whatever is installed.
+          DOTNET_ROLL_FORWARD: Major
 
       - name: Merge listing data into the built site
         run: cp ${{env.listingOutputDirectory}}/index.json ${{env.listPublishDirectory}}/index.json
