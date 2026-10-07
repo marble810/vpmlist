@@ -7,10 +7,17 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
+	import { t, type MessageKey } from '$lib/i18n/index.js';
 	import { openInVcc, siteConfig } from '$lib/site-config';
-	import type { Package, PackageVersion } from '$lib/vpm';
+	import type { Package, PackageType, PackageVersion } from '$lib/vpm';
 
 	let { open = $bindable(false), pkg = null }: { open?: boolean; pkg?: Package | null } = $props();
+
+	const typeLabels: Record<PackageType, MessageKey> = {
+		Avatar: 'type.avatar',
+		World: 'type.world',
+		Any: 'type.any'
+	};
 
 	let versionId = $state<string | null>(null);
 	let trackedPackageId = $state<string | null>(null);
@@ -35,12 +42,12 @@
 <Dialog.Root bind:open>
 	<Dialog.Content class="sm:max-w-xl">
 		<Dialog.Header>
-			<Dialog.Title class="pr-8">{pkg?.displayName ?? 'Package'}</Dialog.Title>
+			<Dialog.Title class="pr-8">{pkg?.displayName ?? t('detail.packageFallback')}</Dialog.Title>
 			<Dialog.Description class="flex flex-wrap items-center gap-2">
 				<span class="font-mono text-xs">{pkg?.id}</span>
 				{#if version}
 					<Badge variant="outline" class="font-mono">v{version.version}</Badge>
-					<Badge variant="secondary">{version.type}</Badge>
+					<Badge variant="secondary">{t(typeLabels[version.type])}</Badge>
 				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
@@ -48,8 +55,8 @@
 		{#if pkg && version}
 			{#if pkg.versions.length > 1}
 				<div class="flex flex-col gap-2">
-					<span class="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-						Versions
+					<span class="text-muted-foreground text-xs font-medium">
+						{t('detail.versions')}
 					</span>
 					<div class="flex flex-wrap gap-1.5">
 						{#each pkg.versions as candidate (candidate.version)}
@@ -73,7 +80,7 @@
 
 			<dl class="grid gap-2 text-sm sm:grid-cols-[7rem_1fr]">
 				{#if version.author?.name}
-					<dt class="text-muted-foreground">Author</dt>
+					<dt class="text-muted-foreground">{t('detail.author')}</dt>
 					<dd>
 						{#if version.author.url}
 							<a
@@ -90,10 +97,10 @@
 					</dd>
 				{/if}
 
-				<dt class="text-muted-foreground">Dependencies</dt>
+				<dt class="text-muted-foreground">{t('detail.dependencies')}</dt>
 				<dd class="flex flex-col gap-1">
 					{#if dependencies.length === 0}
-						<span class="text-muted-foreground">None</span>
+						<span class="text-muted-foreground">{t('detail.none')}</span>
 					{:else}
 						{#each dependencies as [name, range] (name)}
 							<span class="flex flex-wrap items-baseline gap-x-2">
@@ -105,12 +112,12 @@
 				</dd>
 
 				{#if version.unity}
-					<dt class="text-muted-foreground">Unity</dt>
+					<dt class="text-muted-foreground">{t('detail.unity')}</dt>
 					<dd class="font-mono text-xs">{version.unity}</dd>
 				{/if}
 
 				{#if version.license || version.licensesUrl}
-					<dt class="text-muted-foreground">License</dt>
+					<dt class="text-muted-foreground">{t('detail.license')}</dt>
 					<dd>
 						{#if version.licensesUrl}
 							<a
@@ -119,7 +126,7 @@
 								rel="noreferrer"
 								class="underline-offset-4 hover:underline"
 							>
-								{version.license ?? 'See license'}
+								{version.license ?? t('detail.seeLicense')}
 							</a>
 						{:else}
 							{version.license}
@@ -128,14 +135,14 @@
 				{/if}
 
 				{#if sha}
-					<dt class="text-muted-foreground">SHA-256</dt>
+					<dt class="text-muted-foreground">{t('detail.sha256')}</dt>
 					<dd class="flex items-center gap-1">
 						<code class="text-muted-foreground truncate font-mono text-xs">{sha.slice(0, 16)}…</code>
 						<Button
 							size="icon-xs"
 							variant="ghost"
-							aria-label="Copy SHA-256"
-							onclick={() => copyText(sha, 'SHA-256 copied')}
+							aria-label={t('detail.copySha')}
+							onclick={() => copyText(sha, t('toast.shaCopied'))}
 						>
 							<CopyIcon />
 						</Button>
@@ -161,20 +168,20 @@
 					disabled={!version.url}
 				>
 					<DownloadIcon />
-					Download .ZIP
+					{t('common.downloadZip')}
 				</Button>
 				<div class="flex w-full gap-2 sm:w-auto">
 					<Button
 						variant="outline"
 						class="flex-1 sm:flex-none"
-						onclick={() => copyText(siteConfig.listingUrl, 'Listing URL copied')}
+						onclick={() => copyText(siteConfig.listingUrl, t('toast.listingUrlCopied'))}
 					>
 						<CopyIcon />
-						Listing URL
+						{t('common.listingUrl')}
 					</Button>
 					<Button class="flex-1 sm:flex-none" onclick={() => openInVcc()}>
 						<PlusIcon />
-						Add to VCC
+						{t('common.addToVcc')}
 					</Button>
 				</div>
 			</Dialog.Footer>

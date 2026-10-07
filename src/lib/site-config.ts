@@ -17,6 +17,13 @@ export const siteConfig = {
 	bannerUrl: source.bannerUrl,
 };
 
+/**
+ * The site's own name. A brand/proper noun, so it is never translated —
+ * kept out of `src/lib/i18n/messages/` on purpose (see AGENTS.md).
+ * `index.html` carries the same string as a no-JS fallback.
+ */
+export const siteTitle = "Marble's VPM Listing";
+
 export const repositoryUrl = (() => {
 	const infoLink = siteConfig.infoLink?.url;
 	if (!infoLink) return undefined;

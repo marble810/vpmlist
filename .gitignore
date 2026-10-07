@@ -12,3 +12,5 @@ public/index.json
 
 # design sources (large, not published)
 banner.psd
+# scratch logs from design tools (they keep these locked while running)
+design/*.log

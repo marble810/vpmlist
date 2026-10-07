@@ -1,8 +1,9 @@
 <script lang="ts">
 	import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
-	import ThemeToggle from '$lib/components/theme-toggle.svelte';
+	import LanguageToggle from '$lib/components/language-toggle.svelte';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
-	import { resolveAssetUrl, siteConfig } from '$lib/site-config';
+	import { t } from '$lib/i18n/index.js';
+	import { resolveAssetUrl, siteConfig, siteTitle } from '$lib/site-config';
 
 	const banner = resolveAssetUrl(siteConfig.bannerUrl);
 </script>
@@ -20,18 +21,12 @@
 	<div class="flex items-start justify-between gap-4">
 		<div class="flex min-w-0 flex-col gap-2">
 			<h1 class="text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
-				{siteConfig.name}
+				{siteTitle}
 			</h1>
-
-			{#if siteConfig.description}
-				<p class="text-muted-foreground max-w-2xl text-sm text-pretty">
-					{siteConfig.description}
-				</p>
-			{/if}
 
 			<div class="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
 				{#if siteConfig.author?.name}
-					<span class="hidden sm:inline">Published by</span>
+					<span class="hidden sm:inline">{t('header.publishedBy')}</span>
 					<Tooltip.Provider>
 						<Tooltip.Root>
 							<Tooltip.Trigger>
@@ -61,7 +56,7 @@
 						rel="noreferrer"
 						class="hover:text-foreground inline-flex items-center gap-1 underline-offset-4 hover:underline"
 					>
-						{siteConfig.infoLink.text ?? 'Learn more'}
+						{siteConfig.infoLink.text ?? t('header.learnMore')}
 						<ExternalLinkIcon class="size-3.5" />
 					</a>
 				{/if}
@@ -70,6 +65,8 @@
 			</div>
 		</div>
 
-		<ThemeToggle />
+		<div class="flex shrink-0 items-center gap-2">
+			<LanguageToggle />
+		</div>
 	</div>
 </header>

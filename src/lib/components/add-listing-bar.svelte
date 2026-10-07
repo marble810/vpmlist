@@ -7,6 +7,7 @@
 	import { Card, CardContent } from '$lib/components/ui/card/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
+	import { t } from '$lib/i18n/index.js';
 	import { openInVcc, siteConfig } from '$lib/site-config';
 
 	let { onhelp }: { onhelp: () => void } = $props();
@@ -16,7 +17,7 @@
 	<CardContent class="flex flex-col gap-3">
 		<div class="flex flex-wrap items-center justify-between gap-2">
 			<Label for="listing-url" class="text-sm">
-				Listing URL
+				{t('common.listingUrl')}
 			</Label>
 			<button
 				type="button"
@@ -24,7 +25,7 @@
 				class="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs underline-offset-4 hover:underline"
 			>
 				<CircleHelpIcon class="size-3.5" />
-				How do I add this to VCC?
+				{t('bar.howToAdd')}
 			</button>
 		</div>
 
@@ -40,14 +41,14 @@
 			<div class="flex shrink-0 gap-2">
 				<Button onclick={() => openInVcc()} class="grow sm:grow-0">
 					<PlusIcon />
-					Add to VCC
+					{t('common.addToVcc')}
 				</Button>
 				<Button
 					variant="outline"
-					onclick={() => copyText(siteConfig.listingUrl, 'Listing URL copied')}
+					onclick={() => copyText(siteConfig.listingUrl, t('toast.listingUrlCopied'))}
 				>
 					<CopyIcon />
-					Copy
+					{t('common.copy')}
 				</Button>
 			</div>
 		</div>

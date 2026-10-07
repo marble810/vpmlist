@@ -1,19 +1,20 @@
 import { toast } from 'svelte-sonner';
+import { t } from '$lib/i18n/index.js';
 
 /**
  * Copy helper with a toast. Uses the async clipboard API, and falls back to the
  * legacy textarea trick for non-secure contexts.
  */
-export async function copyText(text: string, message = 'Copied to clipboard'): Promise<void> {
+export async function copyText(text: string, message?: string): Promise<void> {
 	try {
 		if (navigator.clipboard?.writeText) {
 			await navigator.clipboard.writeText(text);
 		} else {
 			fallbackCopy(text);
 		}
-		toast.success(message);
+		toast.success(message ?? t('toast.copiedToClipboard'));
 	} catch (error) {
-		toast.error('Could not copy', {
+		toast.error(t('toast.copyFailed'), {
 			description: error instanceof Error ? error.message : String(error),
 		});
 	}

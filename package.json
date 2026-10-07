@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "predev": "npm run listing:fetch",
     "build": "vite build",
+    "prebuild": "npm run listing:fetch",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
+    "listing:fetch": "node scripts/fetch-listing.mjs source.json public/index.json",
     "listing:filter": "node scripts/filter-excluded-packages.mjs source.json dist/index.json",
     "listing:summary": "node scripts/summarize-listing.mjs dist/index.json"
   },
@@ -18,7 +21,6 @@
     "@tsconfig/svelte": "^5.0.8",
     "@types/node": "^24.13.3",
     "bits-ui": "^2.19.3",
-    "mode-watcher": "^1.1.0",
     "svelte": "^5.57.0",
     "svelte-check": "^4.7.6",
     "svelte-sonner": "^1.2.1",
@@ -28,7 +30,6 @@
     "vite": "^8.3.0"
   },
   "dependencies": {
-    "@fontsource-variable/inter": "^5.3.0",
     "@lucide/svelte": "^1.48.0",
     "cn": "^0.4.0",
     "tailwind-variants": "^3.3.1"

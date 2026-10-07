@@ -1,23 +1,41 @@
 import { buildPackages, parseListing, type Package, type VpmListing } from './vpm';
 import { resolveListingDataUrl } from './site-config';
 
+/**
+ * Why loading `index.json` failed. Kept as data (not a message) so the UI can
+ * render it in the active locale instead of a hard-coded English string.
+ */
+export type ListingFailure =
+	| { code: 'http'; url: string; status: number }
+	| { code: 'invalid'; url: string }
+	| { code: 'unknown'; message: string };
+
 export type ListingState =
 	| { status: 'loading' }
 	| { status: 'ready'; listing: VpmListing; packages: Package[] }
-	| { status: 'error'; message: string };
+	| { status: 'error'; failure: ListingFailure };
+
+class ListingFetchError extends Error {
+	readonly failure: ListingFailure;
+
+	constructor(failure: ListingFailure) {
+		super(failure.code === 'unknown' ? failure.message : failure.code);
+		this.failure = failure;
+	}
+}
 
 async function fetchListing(): Promise<VpmListing> {
 	const url = resolveListingDataUrl();
 	const response = await fetch(url, { headers: { accept: 'application/json' } });
 
 	if (!response.ok) {
-		throw new Error(`Could not load ${url} — HTTP ${response.status}`);
+		throw new ListingFetchError({ code: 'http', url, status: response.status });
 	}
 
 	const text = await response.text();
 	if (!text.trimStart().startsWith('{')) {
 		// Static hosts answer unknown paths with index.html; that is not data.
-		throw new Error(`${url} did not return JSON`);
+		throw new ListingFetchError({ code: 'invalid', url });
 	}
 
 	return parseListing(JSON.parse(text));
@@ -35,7 +53,13 @@ export function createListingQuery() {
 		} catch (error) {
 			state = {
 				status: 'error',
-				message: error instanceof Error ? error.message : String(error),
+				failure:
+					error instanceof ListingFetchError
+						? error.failure
+						: {
+								code: 'unknown',
+								message: error instanceof Error ? error.message : String(error)
+							}
 			};
 		}
 	}
@@ -46,6 +70,6 @@ export function createListingQuery() {
 		get state(): ListingState {
 			return state;
 		},
-		reload: load,
+		reload: load
 	};
 }

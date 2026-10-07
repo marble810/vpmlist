@@ -1,6 +1,5 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
-@import '@fontsource-variable/inter';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -114,7 +113,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --font-sans: 'Inter Variable', 'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif;
+  --font-sans: system-ui, 'Segoe UI', 'Microsoft YaHei', sans-serif;
 }
 
 @layer base {
