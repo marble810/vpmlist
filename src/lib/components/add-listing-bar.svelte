@@ -63,7 +63,7 @@
 
 <style>
 	.listing-hint {
-		--arrow-width: clamp(220px, 28vw, 360px);
+		--arrow-width: 360px;
 		position: absolute;
 		inset: 0;
 		z-index: 10;
@@ -95,21 +95,8 @@
 	}
 
 	@media (max-width: 639px) {
-		.listing-actions {
-			padding-top: 42px;
-		}
-
 		.listing-hint {
-			--arrow-width: 140px;
-		}
-
-		.press-here {
-			width: 140px;
-			top: -40px;
-		}
-
-		.hint-arrow {
-			left: 55%;
+			display: none;
 		}
 	}
 </style>
