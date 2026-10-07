@@ -67,6 +67,14 @@ jobs:
           npm run check
           npm run build
 
+      - name: Test package source preparation
+        run: node --test scripts/prepare-listing-sources.test.mjs
+
+      - name: Skip sources without a published package release
+        run: node scripts/prepare-listing-sources.mjs source.json
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       # Generates index.json from source.json + GitHub releases.
       # It also renders the template pages in Website/ — we only keep index.json.
       # NOTE: the action does not create its output directory itself.
