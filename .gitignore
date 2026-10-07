@@ -14,3 +14,6 @@ public/index.json
 banner.psd
 # scratch logs from design tools (they keep these locked while running)
 design/*.log
+
+# python helper bytecode (scripts/make-favicon.py)
+__pycache__

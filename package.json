@@ -10,6 +10,7 @@
     "prebuild": "npm run listing:fetch",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
+    "favicon": "python scripts/make-favicon.py",
     "listing:fetch": "node scripts/fetch-listing.mjs source.json public/index.json",
     "listing:filter": "node scripts/filter-excluded-packages.mjs source.json dist/index.json",
     "listing:summary": "node scripts/summarize-listing.mjs dist/index.json"
