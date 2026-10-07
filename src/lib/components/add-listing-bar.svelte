@@ -8,12 +8,12 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { t } from '$lib/i18n/index.js';
-	import { openInVcc, siteConfig } from '$lib/site-config';
+	import { openInVcc, resolveAssetUrl, siteConfig } from '$lib/site-config';
 
 	let { onhelp }: { onhelp: () => void } = $props();
 </script>
 
-<Card class="py-4">
+<Card class="overflow-visible py-4">
 	<CardContent class="flex flex-col gap-3">
 		<div class="flex flex-wrap items-center justify-between gap-2">
 			<Label for="listing-url" class="text-sm">
@@ -38,11 +38,17 @@
 				onfocus={(event) => event.currentTarget.select()}
 			/>
 
-			<div class="flex shrink-0 gap-2">
-				<Button onclick={() => openInVcc()} class="grow sm:grow-0">
-					<PlusIcon />
-					{t('common.addToVcc')}
-				</Button>
+			<div class="listing-actions flex shrink-0 gap-2">
+				<div class="add-listing-target relative grow sm:grow-0">
+					<Button onclick={() => openInVcc()} class="w-full">
+						<PlusIcon />
+						{t('common.addToVcc')}
+					</Button>
+					<div class="listing-hint" aria-hidden="true">
+						<img class="press-here" src={resolveAssetUrl('press_here.png')} alt="" />
+						<img class="hint-arrow" src={resolveAssetUrl('arrow.png')} alt="" />
+					</div>
+				</div>
 				<Button
 					variant="outline"
 					onclick={() => copyText(siteConfig.listingUrl, t('toast.listingUrlCopied'))}
@@ -54,3 +60,56 @@
 		</div>
 	</CardContent>
 </Card>
+
+<style>
+	.listing-hint {
+		--arrow-width: clamp(220px, 28vw, 360px);
+		position: absolute;
+		inset: 0;
+		z-index: 10;
+		pointer-events: none;
+		user-select: none;
+	}
+
+	.press-here {
+		position: absolute;
+		width: 180px;
+		max-width: none;
+		left: 50%;
+		top: -54px;
+		transform: translateX(-50%);
+	}
+
+	.hint-arrow {
+		position: absolute;
+		width: var(--arrow-width);
+		max-width: none;
+		left: 65%;
+		/* The tip is 0.875 image-widths below its top edge. */
+		top: calc(100% + 8px - var(--arrow-width) * 0.875);
+	}
+
+	/* The supplied artwork is white; keep it visible on the light theme too. */
+	:global(html:not(.dark)) .listing-hint {
+		filter: invert(1);
+	}
+
+	@media (max-width: 639px) {
+		.listing-actions {
+			padding-top: 42px;
+		}
+
+		.listing-hint {
+			--arrow-width: 140px;
+		}
+
+		.press-here {
+			width: 140px;
+			top: -40px;
+		}
+
+		.hint-arrow {
+			left: 55%;
+		}
+	}
+</style>

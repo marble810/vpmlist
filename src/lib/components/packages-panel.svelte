@@ -78,15 +78,9 @@
 </script>
 
 <section class="flex flex-col gap-3">
-	<div class="flex flex-wrap items-center justify-between gap-3">
-		<div class="flex items-center gap-2">
-			<h2 class="text-lg font-semibold tracking-tight">{t('panel.title')}</h2>
-			{#if listing.status === 'ready'}
-				<Badge variant="secondary">{packages.length}</Badge>
-			{/if}
-		</div>
-
-		<div class="relative w-full sm:w-72">
+	<div class="flex flex-wrap items-center gap-3">
+		<!-- Only search sits above the decorative listing hint; the rest stays behind it. -->
+		<div class="bg-background relative z-20 w-full rounded-md sm:w-72">
 			<SearchIcon
 				class="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2"
 			/>
@@ -99,6 +93,13 @@
 				disabled={listing.status !== 'ready'}
 				aria-label={t('panel.searchLabel')}
 			/>
+		</div>
+
+		<div class="-order-1 flex items-center gap-2">
+			<h2 class="text-lg font-semibold tracking-tight">{t('panel.title')}</h2>
+			{#if listing.status === 'ready'}
+				<Badge variant="secondary">{packages.length}</Badge>
+			{/if}
 		</div>
 	</div>
 

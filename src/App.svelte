@@ -23,7 +23,7 @@
 	});
 </script>
 
-<div class="min-h-svh">
+<div class="min-h-svh overflow-x-clip">
 	<div class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-8 sm:px-6 sm:py-10">
 		<ListingHeader />
 
