@@ -16,6 +16,7 @@ const zhHant: Record<MessageKey, string> = {
 	'common.copy': '複製',
 	'common.close': '關閉',
 	'common.downloadZip': '下載 .ZIP',
+	'common.viewOnGithub': '在 GitHub 上檢視',
 
 	'bar.howToAdd': '如何將它加入 VCC？',
 

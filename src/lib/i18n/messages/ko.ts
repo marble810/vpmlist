@@ -16,6 +16,7 @@ const ko: Record<MessageKey, string> = {
 	'common.copy': '복사',
 	'common.close': '닫기',
 	'common.downloadZip': '.ZIP 다운로드',
+	'common.viewOnGithub': 'GitHub에서 보기',
 
 	'bar.howToAdd': 'VCC에 추가하는 방법',
 

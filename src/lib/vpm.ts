@@ -25,6 +25,7 @@ export type VpmManifest = {
 	keywords?: string[];
 	license?: string;
 	licensesUrl?: string;
+	documentationUrl?: string;
 	url: string;
 	zipSHA256?: string;
 };
@@ -67,6 +68,48 @@ export function getPackageType(manifest: VpmManifest): PackageType {
 	if (AVATAR_PACKAGE in dependencies) return 'Avatar';
 	if (WORLD_PACKAGE in dependencies) return 'World';
 	return 'Any';
+}
+
+/** Hosts that serve the GitHub website itself; anywhere else gets no link. */
+const GITHUB_HOSTS = new Set(['github.com', 'www.github.com']);
+
+/**
+ * `https://github.com/<owner>/<repo>` for any GitHub URL, dropping whatever
+ * sub-path it points at (`#readme`, `/blob/main/…`, `/releases/download/…`).
+ */
+function githubRepoFromUrl(value: string | undefined): string | undefined {
+	if (!value) return undefined;
+
+	let parsed: URL;
+	try {
+		parsed = new URL(value);
+	} catch {
+		return undefined;
+	}
+
+	if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return undefined;
+	if (!GITHUB_HOSTS.has(parsed.hostname.toLowerCase())) return undefined;
+
+	const [owner, repo] = parsed.pathname.split('/').filter(Boolean);
+	const name = repo?.replace(/\.git$/, '');
+	if (!owner || !name) return undefined;
+
+	return `https://github.com/${owner}/${name}`;
+}
+
+/**
+ * The GitHub repository to link a package to, or `undefined` when it does not
+ * live on GitHub — the UI then renders no link at all, because the site only
+ * ever shows upstream data and never keeps a package id → repo table of its own
+ * (see AGENTS.md).
+ *
+ * `documentationUrl` is the author's own pointer and frequently is the
+ * repository itself; the download `url` is a GitHub release asset
+ * (`…/releases/download/<tag>/<file>.zip`) and therefore names `<owner>/<repo>`
+ * even when documentation lives somewhere else.
+ */
+export function getRepoUrl(manifest: VpmManifest): string | undefined {
+	return githubRepoFromUrl(manifest.documentationUrl) ?? githubRepoFromUrl(manifest.url);
 }
 
 type ParsedVersion = { core: number[]; pre: string };

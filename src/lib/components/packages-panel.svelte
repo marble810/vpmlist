@@ -4,6 +4,7 @@
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
 	import SearchIcon from '@lucide/svelte/icons/search';
+	import GithubIcon from './github-icon.svelte';
 	import PackageDetailDialog from './package-detail-dialog.svelte';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
@@ -14,7 +15,7 @@
 	import { segments, t, type MessageKey } from '$lib/i18n/index.js';
 	import type { ListingFailure, ListingState } from '$lib/listing.svelte';
 	import { openInVcc } from '$lib/site-config';
-	import type { Package, PackageType } from '$lib/vpm';
+	import { getRepoUrl, type Package, type PackageType } from '$lib/vpm';
 
 	let { listing, onretry }: { listing: ListingState; onretry: () => void } = $props();
 
@@ -173,6 +174,7 @@
 				</Table.Header>
 				<Table.Body>
 					{#each filtered as pkg (pkg.id)}
+						{@const repoUrl = getRepoUrl(pkg.latest)}
 						<Table.Row>
 							<Table.Cell class="max-w-0 whitespace-normal">
 								<button
@@ -230,7 +232,20 @@
 									>
 										<InfoIcon />
 									</Button>
-									<Button size="sm" onclick={() => openInVcc()}>
+									{#if repoUrl}
+										<Button
+											size="icon-sm"
+											variant="ghost"
+											href={repoUrl}
+											target="_blank"
+											rel="noreferrer"
+											aria-label={t('common.viewOnGithub')}
+										>
+											<GithubIcon />
+										</Button>
+									{/if}
+									<!-- Keep the install action apart from the icon group beside it. -->
+									<Button size="sm" class="ml-2" onclick={() => openInVcc()}>
 										<PlusIcon />
 										{t('common.addToVcc')}
 									</Button>

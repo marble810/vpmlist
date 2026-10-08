@@ -16,6 +16,7 @@ const ja: Record<MessageKey, string> = {
 	'common.copy': 'コピー',
 	'common.close': '閉じる',
 	'common.downloadZip': '.ZIP をダウンロード',
+	'common.viewOnGithub': 'GitHub で見る',
 
 	'bar.howToAdd': 'VCC に追加する方法',
 

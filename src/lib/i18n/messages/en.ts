@@ -25,6 +25,7 @@ const en = {
 	'common.copy': 'Copy',
 	'common.close': 'Close',
 	'common.downloadZip': 'Download .ZIP',
+	'common.viewOnGithub': 'View on GitHub',
 
 	'bar.howToAdd': 'How do I add this to VCC?',
 

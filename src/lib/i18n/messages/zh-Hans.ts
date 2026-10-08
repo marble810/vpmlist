@@ -16,6 +16,7 @@ const zhHans: Record<MessageKey, string> = {
 	'common.copy': '复制',
 	'common.close': '关闭',
 	'common.downloadZip': '下载 .ZIP',
+	'common.viewOnGithub': '在 GitHub 上查看',
 
 	'bar.howToAdd': '怎么把它添加到 VCC？',
 
