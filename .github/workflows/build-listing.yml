@@ -67,8 +67,8 @@ jobs:
           npm run check
           npm run build
 
-      - name: Test package source preparation
-        run: node --test scripts/prepare-listing-sources.test.mjs
+      - name: Run unit tests
+        run: npm test
 
       - name: Skip sources without a published package release
         run: node scripts/prepare-listing-sources.mjs source.json
