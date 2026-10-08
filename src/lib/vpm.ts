@@ -20,6 +20,7 @@ export type VpmManifest = {
 	unity?: string;
 	description?: string;
 	dependencies?: Record<string, string>;
+	vpmDependencies?: Record<string, string>;
 	author?: VpmAuthor;
 	keywords?: string[];
 	license?: string;
@@ -36,7 +37,7 @@ export type VpmListing = {
 	packages?: Record<string, { versions?: Record<string, VpmManifest> }>;
 };
 
-/** Which VRChat SDK a package targets, mirroring the listing action's logic. */
+/** Which VRChat SDK a package targets. */
 export type PackageType = 'Avatar' | 'World' | 'Any';
 
 export type PackageVersion = VpmManifest & { type: PackageType };
@@ -55,8 +56,14 @@ export type Package = {
 const AVATAR_PACKAGE = 'com.vrchat.avatars';
 const WORLD_PACKAGE = 'com.vrchat.worlds';
 
+/**
+ * A package can ask for the SDK through either dependency map — `dependencies`
+ * (resolved by Unity) or `vpmDependencies` (resolved by VCC/ALCOM) — so both
+ * count. The listing action only reads `dependencies`, which reports tools that
+ * declare the SDK the VPM way as "Any"; we do not copy that blind spot.
+ */
 export function getPackageType(manifest: VpmManifest): PackageType {
-	const dependencies = manifest.dependencies ?? {};
+	const dependencies = { ...manifest.dependencies, ...manifest.vpmDependencies };
 	if (AVATAR_PACKAGE in dependencies) return 'Avatar';
 	if (WORLD_PACKAGE in dependencies) return 'World';
 	return 'Any';
