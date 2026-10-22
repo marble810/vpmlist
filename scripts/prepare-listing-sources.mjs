@@ -4,7 +4,7 @@
  * 只修改 CI 工作区副本；仓库 source.json 永久保留配置，发布后自动纳入。
  * GitHub/API 错误必须中止，不能假装来源没有版本。
  */
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -35,7 +35,19 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
 		const pages = JSON.parse(execFileSync('gh', [
 			'api', `repos/${repository}/releases?per_page=100`, '--paginate', '--slurp',
 		], { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 }));
-		return pages.flat();
+		const releases = pages.flat();
+		if (hasPackageRelease(releases)) return releases;
+
+		// Release 列表可能短暂返回空结果；用正式版端点确认，避免误删已发布来源。
+		const latest = spawnSync('gh', ['api', `repos/${repository}/releases/latest`], {
+			encoding: 'utf8', maxBuffer: 16 * 1024 * 1024,
+		});
+		if (latest.error) throw latest.error;
+		if (latest.status !== 0) {
+			if (latest.status === 1 && /\(HTTP 404\)/.test(latest.stderr)) return releases;
+			throw new Error(`Failed to read latest release for ${repository}: ${latest.stderr.trim()}`);
+		}
+		return [...releases, JSON.parse(latest.stdout)];
 	});
 	writeFileSync(path, `${JSON.stringify(result.source, null, 2)}\n`, 'utf8');
 	console.log(`Active repositories: ${result.source.githubRepos.join(', ') || '(none)'}`);
